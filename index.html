@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maciej Wyrzykowski</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+  :root{
+    --bg: #EEF1F0;
+    --surface: #FFFFFF;
+    --surface-2: #E4E9E7;
+    --ink: #12232A;
+    --ink-muted: #48595E;
+    --ink-faint: #7C8B8E;
+    --line: #D3DBD8;
+    --accent: #B96A17;
+    --accent-ink: #7A470D;
+    --accent-soft: #F1DCBE;
+    --teal: #146767;
+    --teal-soft: #D3E7E5;
+    --ok: #2E7D4F;
+    --shadow: 0 1px 2px rgba(18,35,42,.04), 0 6px 20px rgba(18,35,42,.05);
+    --radius: 3px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg: #0D1517;
+      --surface: #131D1F;
+      --surface-2: #1A2628;
+      --ink: #E9EFEE;
+      --ink-muted: #A4B4B4;
+      --ink-faint: #6B7B7C;
+      --line: #263335;
+      --accent: #E7A23B;
+      --accent-ink: #F4C783;
+      --accent-soft: #33260F;
+      --teal: #57C9C1;
+      --teal-soft: #12302E;
+      --ok: #6FD79A;
+      --shadow: 0 1px 2px rgba(0,0,0,.25), 0 8px 24px rgba(0,0,0,.28);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg: #0D1517;
+    --surface: #131D1F;
+    --surface-2: #1A2628;
+    --ink: #E9EFEE;
+    --ink-muted: #A4B4B4;
+    --ink-faint: #6B7B7C;
+    --line: #263335;
+    --accent: #E7A23B;
+    --accent-ink: #F4C783;
+    --accent-soft: #33260F;
+    --teal: #57C9C1;
+    --teal-soft: #12302E;
+    --ok: #6FD79A;
+    --shadow: 0 1px 2px rgba(0,0,0,.25), 0 8px 24px rgba(0,0,0,.28);
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+    font-size:16px;
+    line-height:1.6;
+    -webkit-user-select:none; -moz-user-select:none; -ms-user-select:none; user-select:none;
+  }
+  img{ -webkit-user-drag:none; user-drag:none; }
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:.001ms !important; transition-duration:.001ms !important;}
+  }
+
+  /* ---------- ticker ---------- */
+  .ticker{ overflow:hidden; background:var(--ink); }
+  .ticker-track{
+    display:flex; align-items:center; width:max-content;
+    animation:ticker-scroll 32s linear infinite;
+  }
+  .ticker .item{
+    display:inline-block; padding:7px 0; font-family:'IBM Plex Mono', monospace;
+    font-size:11px; font-weight:500; letter-spacing:.09em; color:var(--bg); white-space:nowrap;
+  }
+  .ticker .sep{ padding:0 18px; color:var(--accent); font-family:'IBM Plex Mono', monospace; font-size:11px; }
+  @keyframes ticker-scroll{ from{ transform:translateX(0); } to{ transform:translateX(-50%); } }
+  @media (prefers-reduced-motion: reduce){ .ticker-track{ animation:none; } }
+
+  h1,h2,h3{
+    font-family:'Big Shoulders Display', ui-sans-serif, system-ui, sans-serif;
+    font-weight:800;
+    letter-spacing:.01em;
+    text-transform:uppercase;
+    text-wrap:balance;
+    margin:0;
+    color:var(--ink);
+  }
+  .mono{ font-family:'IBM Plex Mono', ui-monospace, SFMono-Regular, monospace; }
+  a{ color:inherit; }
+  [hidden]{ display:none !important; }
+
+  .wrap{ max-width:1080px; margin:0 auto; padding:0 28px; }
+  @media (max-width:480px){
+    .wrap{ padding:0 18px; }
+    .nav-inner{ padding:14px 18px; }
+  }
+
+  /* ---------- nav ---------- */
+  .nav{
+    position:sticky; top:0; z-index:20;
+    background:color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-inner{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 28px;
+    max-width:1080px; margin:0 auto;
+  }
+  .brand{
+    font-family:'Big Shoulders Display', sans-serif;
+    font-weight:800; font-size:22px; letter-spacing:.03em;
+    display:flex; align-items:baseline; gap:8px;
+  }
+  .brand-avatar{
+    width:28px; height:28px; border-radius:50%; object-fit:cover;
+    border:1px solid var(--line); flex-shrink:0;
+    transition:border-color .2s ease, transform .2s ease;
+  }
+  .brand:hover .brand-avatar{ border-color:var(--accent); transform:scale(1.08); }
+  .brand .dot{ color:var(--accent); }
+  .brand-short{ display:none; }
+  .brand .tag{
+    font-family:'IBM Plex Mono', monospace; font-weight:500;
+    font-size:11px; color:var(--ink-faint); letter-spacing:.08em;
+  }
+  @media (max-width:640px){
+    .brand{ font-size:18px; gap:6px; }
+    .brand .tag{ display:none; }
+  }
+  @media (max-width:400px){
+    .brand-full{ display:none; }
+    .brand-short{ display:inline; }
+  }
+  .langsw{
+    display:flex; border:1px solid var(--line); border-radius:4px; overflow:hidden;
+    font-family:'IBM Plex Mono', monospace; font-size:12px; font-weight:600;
+  }
+  .langsw button{
+    border:0; background:transparent; color:var(--ink-muted);
+    padding:7px 12px; cursor:pointer; letter-spacing:.06em;
+  }
+  .langsw button[aria-pressed="true"]{ background:var(--ink); color:var(--bg); }
+  .langsw button:focus-visible{ outline:2px solid var(--accent); outline-offset:-2px; }
+  .nav-controls{ display:flex; align-items:center; gap:10px; }
+  .themesw{
+    width:34px; height:34px; display:flex; align-items:center; justify-content:center;
+    border:1px solid var(--line); border-radius:4px; background:transparent;
+    color:var(--ink-muted); cursor:pointer; font-size:15px; line-height:1;
+  }
+  .themesw:hover{ color:var(--ink); border-color:var(--ink-muted); }
+  .themesw:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+
+  /* ---------- eyebrow / section head ---------- */
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace; font-size:12px; font-weight:600;
+    letter-spacing:.14em; text-transform:uppercase; color:var(--accent-ink);
+    display:flex; align-items:center; gap:10px;
+  }
+  .eyebrow::before{ content:""; width:18px; height:1px; background:var(--accent); display:inline-block; }
+  section{ padding:64px 0; border-top:1px solid var(--line); }
+  section.hero{ border-top:0; padding-top:56px; }
+  .section-head{ margin-bottom:36px; display:flex; flex-direction:column; gap:10px; }
+  .section-head h2{ font-size:clamp(26px,3.4vw,36px); }
+  .lede{ color:var(--ink-muted); max-width:62ch; font-size:16px; }
+
+  /* ---------- hero ---------- */
+  .hero-grid{ display:grid; grid-template-columns:1.3fr 1fr; gap:48px; align-items:start; }
+  @media (max-width:820px){ .hero-grid{ grid-template-columns:1fr; } }
+  .hero h1{ font-size:clamp(46px,8.2vw,84px); line-height:.92; }
+  .hero .role{
+    font-family:'IBM Plex Mono', monospace; font-size:13px; font-weight:600;
+    letter-spacing:.1em; color:var(--teal); text-transform:uppercase; margin-top:14px;
+  }
+  .hero p.sub{ margin-top:18px; font-size:18px; color:var(--ink-muted); max-width:52ch; }
+  .status-row{ display:flex; gap:10px; flex-wrap:wrap; margin-top:20px; }
+  .status-line{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:.06em;
+    color:var(--ok); border:1px solid var(--line); background:var(--surface);
+    padding:6px 12px; border-radius:4px;
+  }
+  .status-line .blip{
+    width:7px; height:7px; border-radius:50%; background:var(--ok);
+    box-shadow:0 0 0 3px color-mix(in srgb, var(--ok) 25%, transparent);
+  }
+  .status-line.since{ color:var(--ink-muted); }
+  .status-line.since .yr{ color:var(--ink); font-weight:600; }
+  .cta-row{ display:flex; gap:12px; margin-top:28px; flex-wrap:wrap; }
+  .rate-note{ margin:14px 0 0; font-size:11.5px; letter-spacing:.03em; color:var(--ink-faint); }
+  .btn{
+    font-family:'IBM Plex Mono', monospace; font-weight:600; font-size:13px;
+    letter-spacing:.04em; text-decoration:none; padding:13px 20px; border-radius:4px;
+    display:inline-flex; align-items:center; gap:8px; border:1px solid transparent;
+  }
+  .btn-primary{ background:var(--ink); color:var(--bg); }
+  .btn-primary:hover{ background:var(--accent); color:#1a1206; }
+  .btn-ghost{ border-color:var(--line); color:var(--ink); background:var(--surface); }
+  .btn-ghost:hover{ border-color:var(--ink-muted); }
+  .btn:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+
+
+  /* ---------- signal panel (skill split) ---------- */
+  .panel{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    box-shadow:var(--shadow); padding:22px 22px 20px;
+  }
+  .panel-title{
+    font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:.12em;
+    color:var(--ink-faint); text-transform:uppercase; margin-bottom:16px;
+    display:flex; justify-content:space-between;
+  }
+  .meter{ display:flex; height:14px; border-radius:3px; overflow:hidden; border:1px solid var(--line); }
+  .meter span{ display:block; height:100%; }
+  .meter .m1{ background:var(--accent); }
+  .meter .m2{ background:var(--teal); }
+  .meter .m3{ background:var(--ink-faint); }
+  .meter-legend{ display:flex; flex-direction:column; gap:12px; margin-top:18px; }
+  .meter-row{ display:flex; align-items:baseline; justify-content:space-between; gap:10px; font-size:14px; }
+  .meter-row .sw{ width:9px; height:9px; border-radius:2px; display:inline-block; margin-right:8px; }
+  .meter-row .val{ font-family:'IBM Plex Mono', monospace; font-weight:600; font-variant-numeric:tabular-nums; color:var(--ink); }
+  .meter-row .lbl{ color:var(--ink-muted); display:flex; align-items:center; }
+
+  /* ---------- services ---------- */
+  .svc-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+  @media (max-width:820px){ .svc-grid{ grid-template-columns:1fr; } }
+  .svc-card{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    padding:24px; display:flex; flex-direction:column; gap:14px;
+    transition:border-color .2s ease, transform .2s ease, background-color .2s ease;
+  }
+  .svc-card:hover{
+    border-color:var(--accent); background:color-mix(in srgb, var(--accent-soft) 35%, var(--surface));
+    transform:translateY(-3px);
+  }
+  .svc-card .pct{
+    font-family:'IBM Plex Mono', monospace; font-size:13px; font-weight:600;
+    color:var(--accent-ink); letter-spacing:.04em;
+  }
+  .svc-card h3{ font-size:22px; }
+  .svc-card ul{ margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:9px; }
+  .svc-card li{ font-size:14.5px; color:var(--ink-muted); padding-left:16px; position:relative; }
+  .svc-card li::before{ content:"›"; position:absolute; left:0; color:var(--ink-faint); font-family:'IBM Plex Mono', monospace; }
+
+  /* ---------- project cards ---------- */
+  .proj-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:20px; }
+  @media (max-width:820px){ .proj-grid{ grid-template-columns:1fr; } }
+  .proj{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    padding:22px; display:flex; flex-direction:column; gap:12px;
+    transition:border-color .2s ease, transform .2s ease, box-shadow .2s ease;
+  }
+  .proj:hover{
+    border-color:var(--teal); box-shadow:var(--shadow); transform:translateY(-3px);
+  }
+  .proj-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+  .proj-head h3{ font-size:21px; text-transform:none; letter-spacing:0; }
+  .proj-tags{ display:flex; align-items:center; gap:8px; flex-shrink:0; }
+  .year{
+    font-family:'IBM Plex Mono', monospace; font-size:11.5px; font-weight:600;
+    color:var(--ink-faint); font-variant-numeric:tabular-nums; white-space:nowrap;
+  }
+  .tag{
+    font-family:'IBM Plex Mono', monospace; font-size:10.5px; font-weight:600;
+    letter-spacing:.06em; text-transform:uppercase; padding:4px 8px; border-radius:3px;
+    white-space:nowrap;
+  }
+  .tag-client{ background:var(--accent-soft); color:var(--accent-ink); }
+  .tag-personal{ background:var(--teal-soft); color:var(--teal); }
+  .proj p{ margin:0; color:var(--ink-muted); font-size:14.5px; }
+  .stack{ display:flex; flex-wrap:wrap; gap:7px; margin-top:2px; }
+  .chip{
+    font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--ink-muted);
+    border:1px solid var(--line); border-radius:3px; padding:3px 8px;
+    transition:border-color .15s ease, color .15s ease, background-color .15s ease;
+  }
+  .chip:hover{ border-color:var(--teal); color:var(--teal); background:var(--teal-soft); }
+
+  /* ---------- niche block ---------- */
+  .niche{
+    border:1px solid var(--teal); background:var(--teal-soft); border-radius:var(--radius);
+    padding:28px; margin-top:32px;
+  }
+  .niche-head{ display:flex; align-items:center; gap:12px; margin-bottom:6px; }
+  .niche-head h3{ font-size:22px; color:var(--teal); text-transform:uppercase; }
+  .niche p.lede2{ color:var(--ink-muted); max-width:64ch; margin:6px 0 20px; font-size:15px; }
+  .niche-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:16px; }
+  @media (max-width:820px){ .niche-grid{ grid-template-columns:1fr; } }
+  .niche-item{
+    display:flex; flex-direction:column; gap:6px; padding:10px; margin:-10px;
+    border-radius:3px; transition:background-color .2s ease;
+  }
+  .niche-item:hover{ background:color-mix(in srgb, var(--surface) 55%, transparent); }
+  .niche-item .k{ font-family:'IBM Plex Mono', monospace; font-size:12px; font-weight:600; color:var(--teal); letter-spacing:.05em; display:flex; justify-content:space-between; gap:8px; }
+  .niche-item .k .year{ color:var(--teal); opacity:.7; font-weight:600; }
+  .niche-item p{ font-size:14px; color:var(--ink-muted); margin:0; }
+  .niche--amber{ border-color:var(--accent); background:var(--accent-soft); margin-top:20px; }
+  .niche--amber .niche-head h3{ color:var(--accent-ink); }
+  .niche--amber .niche-item .k{ color:var(--accent-ink); }
+  .niche--amber .niche-item .k .year{ color:var(--accent-ink); }
+
+  /* ---------- process ---------- */
+  .steps{ display:grid; grid-template-columns:repeat(4,1fr); gap:20px; counter-reset:step; }
+  @media (max-width:820px){ .steps{ grid-template-columns:1fr 1fr; } }
+  @media (max-width:520px){ .steps{ grid-template-columns:1fr; } }
+  .step{ display:flex; flex-direction:column; gap:8px; }
+  .step .n{
+    font-family:'IBM Plex Mono', monospace; font-size:13px; color:var(--accent-ink);
+    border:1px solid var(--line); background:var(--surface); width:30px; height:30px;
+    border-radius:4px; display:flex; align-items:center; justify-content:center; font-weight:600;
+    transition:background-color .2s ease, color .2s ease, border-color .2s ease;
+  }
+  .step:hover .n{ background:var(--accent); color:#1a1206; border-color:var(--accent); }
+  .step h4{ font-family:'IBM Plex Sans'; font-weight:700; font-size:16px; margin:0; text-transform:none; letter-spacing:0; }
+  .step p{ margin:0; font-size:14px; color:var(--ink-muted); }
+
+  /* ---------- stack cloud ---------- */
+  .cloud{ display:flex; flex-wrap:wrap; gap:9px; }
+  .cloud .chip{ font-size:12.5px; padding:6px 11px; }
+
+  /* ---------- contact ---------- */
+  .contact{ text-align:center; padding:72px 0 40px; }
+  .contact h2{ font-size:clamp(28px,5vw,44px); }
+  .contact p.sub{ color:var(--ink-muted); margin:14px auto 26px; max-width:46ch; }
+  .contact .cta-row{ justify-content:center; }
+  footer{
+    border-top:1px solid var(--line); padding:24px 0 48px;
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;
+  }
+  footer .mono{ font-size:12px; color:var(--ink-faint); }
+  footer a{ text-decoration:none; color:var(--ink-muted); }
+  footer a:hover{ color:var(--accent-ink); }
+</style>
+</head>
+<body>
+
+<div class="ticker" aria-hidden="true">
+  <div class="ticker-track" data-i18n="pl">
+    <span class="item">DOSTĘPNY DO NOWYCH ZLECEŃ</span><span class="sep">//</span>
+    <span class="item">UCZCIWE STAWKI, BEZ WIELKOMIEJSKICH CEN</span><span class="sep">//</span>
+    <span class="item">W BRANŻY OD 2023</span><span class="sep">//</span>
+    <span class="item">PL / EN · ZDALNIE Z POLSKI</span><span class="sep">//</span>
+    <span class="item">DOSTĘPNY DO NOWYCH ZLECEŃ</span><span class="sep">//</span>
+    <span class="item">UCZCIWE STAWKI, BEZ WIELKOMIEJSKICH CEN</span><span class="sep">//</span>
+    <span class="item">W BRANŻY OD 2023</span><span class="sep">//</span>
+    <span class="item">PL / EN · ZDALNIE Z POLSKI</span><span class="sep">//</span>
+  </div>
+  <div class="ticker-track" data-i18n="en" hidden>
+    <span class="item">OPEN FOR NEW PROJECTS</span><span class="sep">//</span>
+    <span class="item">FAIR RATES, NO BIG-AGENCY PRICING</span><span class="sep">//</span>
+    <span class="item">ACTIVE SINCE 2023</span><span class="sep">//</span>
+    <span class="item">PL / EN · REMOTE FROM POLAND</span><span class="sep">//</span>
+    <span class="item">OPEN FOR NEW PROJECTS</span><span class="sep">//</span>
+    <span class="item">FAIR RATES, NO BIG-AGENCY PRICING</span><span class="sep">//</span>
+    <span class="item">ACTIVE SINCE 2023</span><span class="sep">//</span>
+    <span class="item">PL / EN · REMOTE FROM POLAND</span><span class="sep">//</span>
+  </div>
+</div>
+
+<div class="nav">
+  <div class="nav-inner">
+    <div class="brand">
+      <img class="brand-avatar" src="data:image/jpeg;base64,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" alt="Maciej Wyrzykowski" width="28" height="28">
+      <span class="dot">▲</span>
+      <span class="brand-name">
+        <span class="brand-full">MACIEJ WYRZYKOWSKI</span>
+        <span class="brand-short">M. WYRZYKOWSKI</span>
+      </span>
+      <span class="tag">DEV / AUTOMATION</span>
+    </div>
+    <div class="nav-controls">
+      <button type="button" class="themesw" id="themeToggle" aria-label="Przełącz tryb jasny/ciemny">◐</button>
+      <div class="langsw" role="group" aria-label="Language">
+        <button type="button" data-set-lang="pl" aria-pressed="true">PL</button>
+        <button type="button" data-set-lang="en" aria-pressed="false">EN</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+
+  <section class="hero">
+    <div class="hero-grid">
+      <div>
+        <div class="eyebrow" data-i18n="pl">PROGRAMISTA · AUTOMATYZACJE · IOT</div>
+        <div class="eyebrow" data-i18n="en" hidden>DEVELOPER · AUTOMATION · IOT</div>
+        <h1>Maciej<br>Wyrzykowski</h1>
+        <div class="role" data-i18n="pl">Buduję narzędzia, które faktycznie działają</div>
+        <div class="role" data-i18n="en" hidden>I build tools that actually work</div>
+        <p class="sub" data-i18n="pl">Strony i panele webowe, automatyzacje w Pythonie, rozbudowane arkusze Excela i urządzenia na ESP32. Projektuję i wdrażam je samodzielnie, od pomysłu po działający system.</p>
+        <p class="sub" data-i18n="en" hidden>Websites and web panels, Python automation, advanced Excel systems, and ESP32 devices. I design and ship them myself, from idea to a working system.</p>
+        <div class="status-row">
+          <div class="status-line"><span class="blip"></span><span class="mono" data-i18n="pl">DOSTĘPNOŚĆ: przyjmuję nowe zlecenia</span><span class="mono" data-i18n="en" hidden>AVAILABILITY: open for new projects</span></div>
+          <div class="status-line since"><span class="mono" data-i18n="pl">W BRANŻY OD <span class="yr">2023</span></span><span class="mono" data-i18n="en" hidden>ACTIVE SINCE <span class="yr">2023</span></span></div>
+        </div>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="mailto:wyrzykowski1989@gmail.com">
+            <span data-i18n="pl">Napisz e-mail</span><span data-i18n="en" hidden>Email me</span>
+          </a>
+          <a class="btn btn-ghost" href="https://github.com/maciejtbg" target="_blank" rel="noopener">GitHub ↗</a>
+        </div>
+        <p class="rate-note mono" data-i18n="pl">Uczciwe stawki dopasowane do zakresu zlecenia, bez narzutu dużej agencji.</p>
+        <p class="rate-note mono" data-i18n="en" hidden>Fair rates matched to project scope, no big-agency markup.</p>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title"><span data-i18n="pl">SKŁAD PRACY</span><span data-i18n="en" hidden>WORK COMPOSITION</span><span>70·20·10</span></div>
+        <div class="meter">
+          <span class="m1" style="width:70%"></span>
+          <span class="m2" style="width:20%"></span>
+          <span class="m3" style="width:10%"></span>
+        </div>
+        <div class="meter-legend">
+          <div class="meter-row">
+            <span class="lbl"><span class="sw" style="background:var(--accent)"></span><span data-i18n="pl">Kod i automatyzacje</span><span data-i18n="en" hidden>Code &amp; automation</span></span>
+            <span class="val">70%</span>
+          </div>
+          <div class="meter-row">
+            <span class="lbl"><span class="sw" style="background:var(--teal)"></span><span data-i18n="pl">Dane i Excel</span><span data-i18n="en" hidden>Data &amp; Excel</span></span>
+            <span class="val">20%</span>
+          </div>
+          <div class="meter-row">
+            <span class="lbl"><span class="sw" style="background:var(--ink-faint)"></span><span data-i18n="pl">IoT i inne</span><span data-i18n="en" hidden>IoT &amp; other</span></span>
+            <span class="val">10%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="about">
+    <div class="section-head">
+      <div class="eyebrow" data-i18n="pl">O MNIE</div>
+      <div class="eyebrow" data-i18n="en" hidden>ABOUT</div>
+    </div>
+    <p class="lede" data-i18n="pl" style="max-width:74ch;font-size:17px;">Od kilku lat samodzielnie projektuję i wdrażam narzędzia rozwiązujące konkretne problemy: strony internetowe dla lokalnych firm, rozbudowane systemy do rozliczania czasu pracy w Excelu, urządzenia sterowane ESP32 i monitoring sprzętu satelitarnego. Najlepiej czuję się w projektach, w których trzeba połączyć kilka światów naraz: backend, dane i sprzęt. Bliska jest mi też branża morska i łącznościowa. Budowałem między innymi aplikację do nauki radiotelefonii morskiej (GMDSS) oraz narzędzie do monitoringu terminala satelitarnego, więc specyfikę tego środowiska rozumiem lepiej niż przeciętny programista.</p>
+    <p class="lede" data-i18n="en" hidden style="max-width:74ch;font-size:17px;">For several years I've been designing and shipping tools that solve concrete problems: websites for local businesses, advanced Excel work-time tracking systems, ESP32-controlled devices and satellite equipment monitoring. I do my best work on projects that combine several worlds at once: backend, data and hardware. I also have a soft spot for the maritime and comms industry. I've built a GMDSS (maritime distress &amp; safety) radio training app and a satellite terminal monitoring tool, so I understand that environment better than the average developer.</p>
+  </section>
+
+  <section id="services">
+    <div class="section-head">
+      <div class="eyebrow" data-i18n="pl">USŁUGI</div>
+      <div class="eyebrow" data-i18n="en" hidden>SERVICES</div>
+      <h2 data-i18n="pl">Co robię</h2>
+      <h2 data-i18n="en" hidden>What I do</h2>
+    </div>
+    <div class="svc-grid">
+      <div class="svc-card">
+        <span class="pct">70%</span>
+        <h3 data-i18n="pl">Programowanie<br>i automatyzacje</h3>
+        <h3 data-i18n="en" hidden>Development<br>&amp; automation</h3>
+        <ul>
+          <li data-i18n="pl">Strony i panele webowe (PHP, Node.js/Express, JS)</li>
+          <li data-i18n="en" hidden>Websites and web panels (PHP, Node.js/Express, JS)</li>
+          <li data-i18n="pl">Automatyzacje i boty (Python): monitoring, powiadomienia, integracje</li>
+          <li data-i18n="en" hidden>Automation &amp; bots (Python): monitoring, notifications, integrations</li>
+          <li data-i18n="pl">Aplikacje desktopowe (PyQt5) pakowane do samodzielnego .exe</li>
+          <li data-i18n="en" hidden>Desktop apps (PyQt5) packaged as standalone .exe</li>
+          <li data-i18n="pl">Lokalne AI: rozpoznawanie mowy i obrazu offline (Vosk, YOLO), bez wysyłania danych do chmury</li>
+          <li data-i18n="en" hidden>Local AI: offline speech &amp; vision recognition (Vosk, YOLO), no data sent to the cloud</li>
+        </ul>
+      </div>
+      <div class="svc-card">
+        <span class="pct">20%</span>
+        <h3 data-i18n="pl">Dane i Excel</h3>
+        <h3 data-i18n="en" hidden>Data &amp; Excel</h3>
+        <ul>
+          <li data-i18n="pl">Rozbudowane skoroszyty (rozliczenia, kontrola czasu pracy)</li>
+          <li data-i18n="en" hidden>Advanced workbooks (billing, work-time tracking)</li>
+          <li data-i18n="pl">Porządkowanie i czyszczenie danych</li>
+          <li data-i18n="en" hidden>Data cleaning &amp; structuring</li>
+          <li data-i18n="pl">Proste zestawienia i raporty z logów / CSV</li>
+          <li data-i18n="en" hidden>Simple summaries and reports from logs / CSV</li>
+        </ul>
+      </div>
+      <div class="svc-card">
+        <span class="pct">10%</span>
+        <h3 data-i18n="pl">IoT i systemy<br>wbudowane</h3>
+        <h3 data-i18n="en" hidden>IoT &amp; embedded<br>systems</h3>
+        <ul>
+          <li data-i18n="pl">Sterowniki ESP32/Arduino (czujniki, pompy, automatyka)</li>
+          <li data-i18n="en" hidden>ESP32/Arduino controllers (sensors, pumps, automation)</li>
+          <li data-i18n="pl">Integracje z kamerami IP (ONVIF, RTSP, WebRTC)</li>
+          <li data-i18n="en" hidden>IP camera integrations (ONVIF, RTSP, WebRTC)</li>
+          <li data-i18n="pl">Monitoring sprzętu i urządzeń w czasie rzeczywistym</li>
+          <li data-i18n="en" hidden>Real-time equipment &amp; device monitoring</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="work">
+    <div class="section-head">
+      <div class="eyebrow" data-i18n="pl">WYBRANE PROJEKTY</div>
+      <div class="eyebrow" data-i18n="en" hidden>SELECTED WORK</div>
+      <h2 data-i18n="pl">Co zbudowałem</h2>
+      <h2 data-i18n="en" hidden>What I've built</h2>
+    </div>
+
+    <div class="proj-grid">
+
+      <div class="proj">
+        <div class="proj-head">
+          <h3>ProDentica</h3>
+          <div class="proj-tags">
+            <span class="year">2023</span>
+            <span class="tag tag-client" data-i18n="pl">KLIENT</span>
+            <span class="tag tag-client" data-i18n="en" hidden>CLIENT</span>
+          </div>
+        </div>
+        <p data-i18n="pl">Kompletny serwis WWW dla kliniki stomatologicznej: cennik zabiegów, galeria metamorfoz przed/po, zakładka kariera, generowanie i skanowanie kart podarunkowych oraz panel administracyjny z rolami kont.</p>
+        <p data-i18n="en" hidden>A complete website for a dental clinic: treatment price list, before/after transformation gallery, careers page, gift-card generation &amp; scanning, and an admin panel with account roles.</p>
+        <div class="stack"><span class="chip">PHP</span><span class="chip">MySQL</span><span class="chip">HTML/CSS</span></div>
+      </div>
+
+      <div class="proj">
+        <div class="proj-head">
+          <h3>FamBoard</h3>
+          <span class="tag tag-personal" data-i18n="pl">WŁASNY PROJEKT</span>
+          <span class="tag tag-personal" data-i18n="en" hidden>PERSONAL BUILD</span>
+        </div>
+        <p data-i18n="pl">Aplikacja webowa do motywowania dzieci punktami: ekran na tablet w trybie dzień/noc, panel rodzica do zarządzania wpisami i osobna analiza dla każdego dziecka. Aktualizacje w czasie rzeczywistym przez WebSocket.</p>
+        <p data-i18n="en" hidden>A web app that motivates kids with a points system: a tablet display with day/night mode, a parent panel for managing entries, and separate analytics per child. Real-time updates over WebSocket.</p>
+        <div class="stack"><span class="chip">Node.js</span><span class="chip">Express</span><span class="chip">WebSocket</span><span class="chip">Docker</span></div>
+      </div>
+
+      <div class="proj">
+        <div class="proj-head">
+          <h3>EduBaza</h3>
+          <div class="proj-tags">
+            <span class="year" data-i18n="pl">2025–dziś</span>
+            <span class="year" data-i18n="en" hidden>2025–now</span>
+            <span class="tag tag-personal" data-i18n="pl">WŁASNY PROJEKT</span>
+            <span class="tag tag-personal" data-i18n="en" hidden>PERSONAL BUILD</span>
+          </div>
+        </div>
+        <p data-i18n="pl">Platforma edukacyjna z systemem kont użytkowników i minigrą matematyczną (PHP, własna baza danych). Rozrosła się w osobisty panel z ponad 16 mini-aplikacjami i grami dodawanymi na bieżąco od 2025 roku.</p>
+        <p data-i18n="en" hidden>A learning platform with a user account system and a math mini-game (PHP, custom database). It grew into a personal dashboard with 16+ mini-apps and games added continuously since 2025.</p>
+        <div class="stack"><span class="chip">PHP</span><span class="chip">JavaScript</span><span class="chip">Godot</span><span class="chip">MySQL</span></div>
+      </div>
+
+      <div class="proj">
+        <div class="proj-head">
+          <h3><span data-i18n="pl">System kontroli czasu pracy</span><span data-i18n="en" hidden>Work-time tracking system</span></h3>
+          <span class="tag tag-client" data-i18n="pl">KLIENT</span>
+          <span class="tag tag-client" data-i18n="en" hidden>CLIENT</span>
+        </div>
+        <p data-i18n="pl">Rozbudowany system rozliczania czasu pracy zbudowany w Excelu: automatyczne wyliczanie godzin, nadgodzin i zestawień na podstawie wpisów wejścia i wyjścia, dopracowany w kolejnych iteracjach pod realne potrzeby firmy.</p>
+        <p data-i18n="en" hidden>A comprehensive work-time tracking system built in Excel: automatically calculating hours, overtime and summaries from clock-in and clock-out entries, refined over several iterations for real company use.</p>
+        <div class="stack"><span class="chip">Excel</span><span class="chip mono">formuły / formulas</span></div>
+      </div>
+
+      <div class="proj">
+        <div class="proj-head">
+          <h3>GarbageTruck</h3>
+          <div class="proj-tags">
+            <span class="year">2025</span>
+            <span class="tag tag-personal" data-i18n="pl">WŁASNY PROJEKT</span>
+            <span class="tag tag-personal" data-i18n="en" hidden>PERSONAL BUILD</span>
+          </div>
+        </div>
+        <p data-i18n="pl">Aplikacja w zasobniku systemowym monitorująca w czasie rzeczywistym zajętość dysku sieciowego (FTP/SMB), z powiadomieniami i logiem zdarzeń. Spakowana do samodzielnego pliku .exe.</p>
+        <p data-i18n="en" hidden>A system-tray app that monitors network drive (FTP/SMB) storage usage in real time, with notifications and an event log. Packaged as a standalone .exe.</p>
+        <div class="stack"><span class="chip">Python</span><span class="chip">PyQt5</span><span class="chip">PyInstaller</span></div>
+      </div>
+
+      <div class="proj">
+        <div class="proj-head">
+          <h3>PolishGreyDuckDns</h3>
+          <div class="proj-tags">
+            <span class="year">2025</span>
+            <span class="tag tag-personal" data-i18n="pl">WŁASNY PROJEKT</span>
+            <span class="tag tag-personal" data-i18n="en" hidden>PERSONAL BUILD</span>
+          </div>
+        </div>
+        <p data-i18n="pl">Usługa automatyzująca aktualizację dynamicznego DNS i utrzymanie tunelu Cloudflare, zapewniająca stały i bezpieczny dostęp do usług hostowanych lokalnie, bez własnego adresu IP.</p>
+        <p data-i18n="en" hidden>A service that automates dynamic DNS updates and maintains a Cloudflare Tunnel, providing stable and secure access to locally hosted services without a static IP.</p>
+        <div class="stack"><span class="chip">Python</span><span class="chip">Cloudflare Tunnel</span></div>
+      </div>
+
+    </div>
+
+    <div class="niche">
+      <div class="niche-head">
+        <h3 data-i18n="pl">Nisza: łączność i IoT</h3>
+        <h3 data-i18n="en" hidden>Niche: comms &amp; IoT</h3>
+      </div>
+      <p class="lede2" data-i18n="pl">Rzadkie połączenie: rozumiem kod, sprzęt i specyfikę branży morskiej / łącznościowej jednocześnie.</p>
+      <p class="lede2" data-i18n="en" hidden>An uncommon combination: I understand code, hardware, and the maritime / comms industry all at once.</p>
+      <div class="niche-grid">
+        <div class="niche-item">
+          <span class="k">GMDSS TRAINER</span>
+          <p data-i18n="pl">Aplikacja do nauki częstotliwości morskiej łączności alarmowej (GMDSS), z adaptacyjnym systemem powtórek i statystykami postępów.</p>
+          <p data-i18n="en" hidden>A training app for GMDSS (maritime distress &amp; safety) radio frequencies, with an adaptive spaced-repetition system and progress stats.</p>
+        </div>
+        <div class="niche-item">
+          <span class="k">KYMETAMETER</span>
+          <p data-i18n="pl">Monitoring i logowanie parametrów terminala satelitarnego Kymeta: lokalny serwer HTTPS i zapis danych do CSV.</p>
+          <p data-i18n="en" hidden>Monitoring &amp; logging for a Kymeta satellite terminal: a local HTTPS server with CSV data logging.</p>
+        </div>
+        <div class="niche-item">
+          <span class="k">STEROWANIE POMPĄ · ESP32</span>
+          <p data-i18n="pl">Sterownik pompy na ESP32, od symulacji w Wokwi i Falstad, przez projekt płytki, po działający firmware.</p>
+          <p data-i18n="en" hidden>An ESP32 pump controller, from Wokwi and Falstad simulation, through PCB layout, to working firmware.</p>
+        </div>
+        <div class="niche-item">
+          <span class="k">REOLINK / ONVIF</span>
+          <p data-i18n="pl">Integracja z kamerami IP Reolink: ONVIF, podgląd RTSP i WebRTC oraz sterowanie z poziomu własnych skryptów.</p>
+          <p data-i18n="en" hidden>Integration with Reolink IP cameras: ONVIF, RTSP and WebRTC streaming, plus control from custom scripts.</p>
+        </div>
+        <div class="niche-item">
+          <span class="k">ESP32 · POMPA CIEPŁA LG <span class="year">2026</span></span>
+          <p data-i18n="pl">Odczyt i sterowanie pompą ciepła LG ThermaV przez podsłuchany protokół serwisowy (CN-REMO), z integracją MQTT i panelem w Pythonie.</p>
+          <p data-i18n="en" hidden>Reading and controlling an LG ThermaV heat pump over its reverse-engineered service protocol (CN-REMO), with MQTT integration and a Python control panel.</p>
+        </div>
+        <div class="niche-item">
+          <span class="k">SIEĆ DOMOWA · mDNS <span class="year">2026</span></span>
+          <p data-i18n="pl">Ładne nazwy zamiast adresów IP w sieci domowej (mDNS + reverse proxy), działające równolegle ze starymi adresami, bez ingerencji w router.</p>
+          <p data-i18n="en" hidden>Friendly hostnames instead of IP addresses on a home network (mDNS + reverse proxy), running alongside the old addresses with no router changes.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="niche niche--amber">
+      <div class="niche-head">
+        <h3 data-i18n="pl">Nisza: lokalne AI, mowa i obraz</h3>
+        <h3 data-i18n="en" hidden>Niche: local AI, speech &amp; vision</h3>
+      </div>
+      <p class="lede2" data-i18n="pl">Modele rozpoznawania mowy i obrazu działające offline, na zwykłym sprzęcie, bez wysyłania danych do chmury.</p>
+      <p class="lede2" data-i18n="en" hidden>Speech and vision recognition models running fully offline, on ordinary hardware, without sending data to the cloud.</p>
+      <div class="niche-grid">
+        <div class="niche-item">
+          <span class="k">SPEEDCAM <span class="year">2026</span></span>
+          <p data-i18n="pl">System analizy prędkości pojazdów: kamera IP + model YOLO wykrywa i mierzy prędkość w czasie rzeczywistym.</p>
+          <p data-i18n="en" hidden>A vehicle speed analysis system: an IP camera plus a YOLO model detects vehicles and measures their speed in real time.</p>
+        </div>
+        <div class="niche-item">
+          <span class="k">RADIO ENGLISH <span class="year">2026</span></span>
+          <p data-i18n="pl">Aplikacja desktopowa do nauki angielskiego: radio internetowe z transkrypcją mowy na żywo (offline) i tłumaczeniem zaznaczonych fraz.</p>
+          <p data-i18n="en" hidden>A desktop app for learning English: internet radio with live offline speech transcription and translation of selected phrases.</p>
+        </div>
+        <div class="niche-item">
+          <span class="k">NAUKA CZYTANIA · GŁOSEM <span class="year">2026</span></span>
+          <p data-i18n="pl">Gra do nauki czytania sylab dla dzieci: rozpoznaje wymawiane sylaby offline (model Vosk) i działa lokalnie w sieci domowej, bez internetu.</p>
+          <p data-i18n="en" hidden>A syllable-reading game for kids: recognizes spoken syllables fully offline (Vosk model) and runs locally on the home network, no internet required.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="process">
+    <div class="section-head">
+      <div class="eyebrow" data-i18n="pl">SPOSÓB PRACY</div>
+      <div class="eyebrow" data-i18n="en" hidden>HOW I WORK</div>
+      <h2 data-i18n="pl">Cztery kroki</h2>
+      <h2 data-i18n="en" hidden>Four steps</h2>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <span class="n mono">01</span>
+        <h4 data-i18n="pl">Rozmowa i wycena</h4><h4 data-i18n="en" hidden>Brief &amp; quote</h4>
+        <p data-i18n="pl">Ustalamy zakres, cel i termin. Wycena zwykle w 24-48h.</p>
+        <p data-i18n="en" hidden>We define scope, goal and timeline. Quote usually within 24-48h.</p>
+      </div>
+      <div class="step">
+        <span class="n mono">02</span>
+        <h4 data-i18n="pl">Budowa</h4><h4 data-i18n="en" hidden>Build</h4>
+        <p data-i18n="pl">Pracuję w krótkich iteracjach i pokazuję postępy na bieżąco.</p>
+        <p data-i18n="en" hidden>I work in short iterations and show progress along the way.</p>
+      </div>
+      <div class="step">
+        <span class="n mono">03</span>
+        <h4 data-i18n="pl">Test i odbiór</h4><h4 data-i18n="en" hidden>Test &amp; review</h4>
+        <p data-i18n="pl">Sprawdzamy działanie razem, poprawki do skutku.</p>
+        <p data-i18n="en" hidden>We check everything together, revisions until it's right.</p>
+      </div>
+      <div class="step">
+        <span class="n mono">04</span>
+        <h4 data-i18n="pl">Wsparcie</h4><h4 data-i18n="en" hidden>Support</h4>
+        <p data-i18n="pl">Zostaję po wdrożeniu, żeby wprowadzać poprawki i drobne zmiany.</p>
+        <p data-i18n="en" hidden>I stay after delivery to handle fixes and small changes.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="stack">
+    <div class="section-head">
+      <div class="eyebrow" data-i18n="pl">NARZĘDZIA</div>
+      <div class="eyebrow" data-i18n="en" hidden>TOOLSET</div>
+      <h2 data-i18n="pl">Z czego korzystam</h2>
+      <h2 data-i18n="en" hidden>What I use</h2>
+    </div>
+    <div class="cloud">
+      <span class="chip">Python</span><span class="chip">PHP</span><span class="chip">JavaScript / Node.js</span>
+      <span class="chip">C / C++ (ESP32, Arduino)</span><span class="chip">SQL / MySQL</span><span class="chip">Excel</span>
+      <span class="chip">Docker</span><span class="chip">PyQt5</span><span class="chip">WebSocket</span>
+      <span class="chip">REST API</span><span class="chip">ONVIF / RTSP</span><span class="chip">Cloudflare Tunnel</span>
+      <span class="chip">YOLO</span><span class="chip">Vosk (offline STT)</span><span class="chip">Flask</span>
+      <span class="chip">MQTT</span><span class="chip">mDNS</span>
+      <span class="chip">Git</span><span class="chip">HTML / CSS</span>
+    </div>
+  </section>
+
+  <section class="contact" id="contact" style="border-top:1px solid var(--line);">
+    <div class="eyebrow" style="justify-content:center;" data-i18n="pl">KONTAKT</div>
+    <div class="eyebrow" style="justify-content:center;" data-i18n="en" hidden>CONTACT</div>
+    <h2 data-i18n="pl">Masz projekt do zrobienia?</h2>
+    <h2 data-i18n="en" hidden>Have a project in mind?</h2>
+    <p class="sub" data-i18n="pl">Napisz, co chcesz zbudować. Zwykle odpowiadam w ciągu dnia.</p>
+    <p class="sub" data-i18n="en" hidden>Tell me what you want to build. I usually reply within a day.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="mailto:wyrzykowski1989@gmail.com">
+        <span data-i18n="pl">Napisz e-mail</span><span data-i18n="en" hidden>Email me</span>
+      </a>
+      <a class="btn btn-ghost" href="https://github.com/maciejtbg" target="_blank" rel="noopener">GitHub ↗</a>
+    </div>
+  </section>
+
+  <footer>
+    <span class="mono">© 2026 MACIEJ WYRZYKOWSKI <span data-i18n="pl">· POLSKA</span><span data-i18n="en" hidden>· POLAND</span></span>
+    <span class="mono"><a href="mailto:wyrzykowski1989@gmail.com">wyrzykowski1989@gmail.com</a> · <a href="https://github.com/maciejtbg" target="_blank" rel="noopener">github.com/maciejtbg</a></span>
+  </footer>
+
+</main>
+
+<script>
+(function(){
+  var buttons = document.querySelectorAll('[data-set-lang]');
+  function setLang(lang){
+    document.querySelectorAll('[data-i18n]').forEach(function(el){
+      el.hidden = el.getAttribute('data-i18n') !== lang;
+    });
+    buttons.forEach(function(b){
+      b.setAttribute('aria-pressed', b.getAttribute('data-set-lang') === lang ? 'true' : 'false');
+    });
+    document.documentElement.lang = lang;
+    try{ localStorage.setItem('mt-lang', lang); }catch(e){}
+  }
+  buttons.forEach(function(b){
+    b.addEventListener('click', function(){ setLang(b.getAttribute('data-set-lang')); });
+  });
+  var saved = null;
+  try{ saved = localStorage.getItem('mt-lang'); }catch(e){}
+  if(saved === 'en'){ setLang('en'); }
+
+  var themeBtn = document.getElementById('themeToggle');
+  function systemTheme(){
+    return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+  }
+  function paintToggle(theme){
+    themeBtn.textContent = theme === 'dark' ? '☀' : '☾';
+    themeBtn.setAttribute('aria-label', theme === 'dark' ? 'Przełącz na tryb jasny' : 'Przełącz na tryb ciemny');
+  }
+  function applyTheme(theme){
+    document.documentElement.setAttribute('data-theme', theme);
+    paintToggle(theme);
+    try{ localStorage.setItem('mt-theme', theme); }catch(e){}
+  }
+  var savedTheme = null;
+  try{ savedTheme = localStorage.getItem('mt-theme'); }catch(e){}
+  if(savedTheme === 'light' || savedTheme === 'dark'){
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    paintToggle(savedTheme);
+  } else {
+    paintToggle(systemTheme());
+  }
+  themeBtn.addEventListener('click', function(){
+    var current = document.documentElement.getAttribute('data-theme') || systemTheme();
+    applyTheme(current === 'dark' ? 'light' : 'dark');
+  });
+
+  // Basic copy deterrent: no text selection, no right-click menu, no copy/cut.
+  // This is a speed bump, not real protection: page source is always viewable.
+  document.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+  document.addEventListener('selectstart', function(e){ e.preventDefault(); });
+  document.addEventListener('copy', function(e){ e.preventDefault(); });
+  document.addEventListener('cut', function(e){ e.preventDefault(); });
+  document.addEventListener('dragstart', function(e){ e.preventDefault(); });
+})();
+</script>
+</body>
+</html>
